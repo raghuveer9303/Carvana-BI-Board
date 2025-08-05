@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README*.md
+docs/
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# Development files
+.vscode/
+.idea/
+
+# Node modules (if any in root)
+node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Scripts
+deploy*.sh
+deploy*.ps1

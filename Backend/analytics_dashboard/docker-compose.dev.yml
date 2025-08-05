@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  carvana-analytics-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Development: Mount source code for hot reload
+      - ./app:/app/app
+      - ./run.py:/app/run.py
+    environment:
+      - LOG_LEVEL=DEBUG
+    command: ["python", "-c", "import uvicorn; uvicorn.run('app.main:app', host='0.0.0.0', port=9515, reload=True, log_level='debug')"]

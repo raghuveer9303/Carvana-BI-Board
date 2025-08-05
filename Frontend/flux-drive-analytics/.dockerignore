@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# Development files
+.vscode/
+.idea/
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README*.md
+
+# Cache
+.cache/
+.temp/
+.tmp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Scripts
+deploy*.sh
+deploy*.ps1
+start-dev.ps1
