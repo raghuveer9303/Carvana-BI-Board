@@ -451,6 +451,11 @@ async def get_kpis(db: Session, today_key: int) -> KPIResponse:
     """Get Key Performance Indicators"""
     logger.info(f"Getting KPIs for date_key: {today_key}")
     
+    # Calculate 30 days ago properly (with 2-day lag)
+    today = date.today() - timedelta(days=2)  # 2-day lag
+    thirty_days_ago = today - timedelta(days=30)
+    thirty_days_ago_key = int(thirty_days_ago.strftime("%Y%m%d"))
+    
     # Check inventory - count distinct VINs where status = 'active' (no date filter)
     inventory_today = db.query(func.count(func.distinct(FactDailyInventory.vin))).filter(
         FactDailyInventory.status == 'active'
@@ -471,11 +476,6 @@ async def get_kpis(db: Session, today_key: int) -> KPIResponse:
             FactSalesEvents.sale_price.isnot(None)
         ).scalar() or 0
         logger.info(f"No sales in last 30 days, total sales in database: {total_sales_check}")
-    
-    # Calculate 30 days ago properly (with 2-day lag)
-    today = date.today() - timedelta(days=2)  # 2-day lag
-    thirty_days_ago = today - timedelta(days=30)
-    thirty_days_ago_key = int(thirty_days_ago.strftime("%Y%m%d"))
     
     # Average days to sell (last 30 days) - only consider reasonable values
     avg_days_to_sell = db.query(func.avg(FactSalesEvents.days_to_sell)).filter(
