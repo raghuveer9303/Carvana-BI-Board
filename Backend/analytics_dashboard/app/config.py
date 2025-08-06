@@ -3,8 +3,8 @@ from pydantic_settings import BaseSettings
 from typing import List
 
 class Settings(BaseSettings):
-    # Database - URL encode the password to handle special characters
-    database_url: str = "postgresql://admin:raghu%40123@postgres_db:5432/carvana_db"
+    # Database - Use environment variable or fallback
+    database_url: str = os.getenv("DATABASE_URL", "postgresql://admin:raghu%40123@postgres_db:5432/carvana_db")
     
     # API
     api_title: str = "Carvana Analytics Dashboard API"
