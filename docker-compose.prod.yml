@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile.prod
     container_name: carvana_backend
     environment:
-      - DATABASE_URL=postgresql://admin:${DB_PASSWORD:-raghu@123}@postgres_db:5432/carvana_db
+      - DATABASE_URL=postgresql://admin:${DB_PASSWORD:-raghu%40123}@postgres_db:5432/carvana_db
       - API_TITLE=Carvana Analytics Dashboard API
       - API_VERSION=1.0.0
       - LOG_LEVEL=INFO
