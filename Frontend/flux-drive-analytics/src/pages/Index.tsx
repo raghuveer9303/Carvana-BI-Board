@@ -5,7 +5,7 @@ import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
 import { DataTables } from "@/components/dashboard/DataTables";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import ApiConfigDebug from "@/components/ApiConfigDebug";
+
 import { 
   Car, 
   TrendingUp, 
@@ -213,7 +213,6 @@ const Index = () => {
         {/* Footer Spacer */}
         <div className="h-16"></div>
       </main>
-      <ApiConfigDebug />
     </div>
   );
 };
