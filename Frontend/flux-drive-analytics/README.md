@@ -1,73 +1,121 @@
-# Welcome to your Lovable project
+# Carvana Analytics Dashboard
 
-## Project info
+A modern React-based analytics dashboard for Carvana vehicle inventory and sales management.
 
-**URL**: https://lovable.dev/projects/5a1dc19c-cdd1-4e20-a887-6e8af95b23e7
+## Features
 
-## How can I edit this code?
+- 📊 Real-time vehicle inventory tracking
+- 📈 Sales analytics and performance metrics  
+- 🎯 Interactive data visualizations
+- 📱 Responsive design for all devices
+- 🎨 Modern UI with Tailwind CSS and shadcn/ui components
+- ⚡ Fast performance with Vite bundler
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18 + TypeScript
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Charts**: Recharts for data visualization
+- **State Management**: TanStack Query for server state
+- **Build Tool**: Vite
+- **HTTP Client**: Axios
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/5a1dc19c-cdd1-4e20-a887-6e8af95b23e7) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- Node.js (version 16 or higher)
+- npm or yarn
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd carvana-analytics-dashboard
+```
 
-Follow these steps:
+2. Install dependencies:
+```bash
+npm install
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+3. Create environment file:
+```bash
+cp .env.example .env
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+4. Configure your environment variables:
+```
+VITE_API_BASE_URL=/api
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+5. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Available Scripts
 
-**Use GitHub Codespaces**
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm run type-check` - Run TypeScript type checking
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Project Structure
 
-## What technologies are used for this project?
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # shadcn/ui components
+│   ├── charts/         # Chart components
+│   └── layout/         # Layout components
+├── pages/              # Page components
+├── services/           # API services
+├── types/              # TypeScript type definitions
+├── hooks/              # Custom React hooks
+├── utils/              # Utility functions
+└── lib/                # Configuration and setup files
+```
 
-This project is built with:
+## API Integration
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+The dashboard connects to a FastAPI backend that provides:
 
-## How can I deploy this project?
+- Vehicle inventory data
+- Sales metrics and trends
+- Real-time analytics
+- Historical data for reporting
 
-Simply open [Lovable](https://lovable.dev/projects/5a1dc19c-cdd1-4e20-a887-6e8af95b23e7) and click on Share -> Publish.
+## Deployment
 
-## Can I connect a custom domain to my Lovable project?
+### Docker Deployment
 
-Yes, you can!
+The application includes Docker configuration for containerized deployment:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```bash
+# Build the Docker image
+docker build -f Dockerfile.prod -t carvana-dashboard .
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+# Run the container
+docker run -p 80:80 carvana-dashboard
+```
+
+### Environment Variables
+
+- `VITE_API_BASE_URL` - API endpoint URL (default: `/api`)
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is proprietary to Carvana.

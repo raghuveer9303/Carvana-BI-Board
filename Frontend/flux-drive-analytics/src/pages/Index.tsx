@@ -5,6 +5,7 @@ import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
 import { DataTables } from "@/components/dashboard/DataTables";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import ApiConfigDebug from "@/components/ApiConfigDebug";
 import { 
   Car, 
   TrendingUp, 
@@ -47,7 +48,7 @@ const Index = () => {
                     Connection Error
                   </h3>
                   <AlertDescription className="text-muted-foreground text-base leading-relaxed">
-                    Unable to connect to the Carvana Analytics API. Please ensure the backend is running on port 9515.
+                    Unable to connect to the Carvana Analytics API. Please ensure the backend service is running.
                     {error instanceof Error && (
                       <span className="block mt-2 text-sm font-mono text-error/80">
                         {error.message}
@@ -212,6 +213,7 @@ const Index = () => {
         {/* Footer Spacer */}
         <div className="h-16"></div>
       </main>
+      <ApiConfigDebug />
     </div>
   );
 };

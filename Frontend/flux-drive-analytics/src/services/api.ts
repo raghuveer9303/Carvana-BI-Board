@@ -63,7 +63,7 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
     return response.data;
   } catch (error) {
     console.error('Failed to fetch dashboard data:', error);
-    throw new Error('Failed to connect to Carvana Analytics API. Please ensure the backend is running on port 9515.');
+    throw new Error('Failed to connect to Carvana Analytics API. Please ensure the backend service is running.');
   }
 };
 
