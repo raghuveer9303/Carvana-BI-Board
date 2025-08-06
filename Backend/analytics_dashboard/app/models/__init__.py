@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Date, Numeric, ForeignKey, Text
+from sqlalchemy import create_engine, Column, Integer, String, Date, Numeric, ForeignKey, Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.dialects.postgresql import INTEGER, VARCHAR, NUMERIC, DATE
@@ -10,17 +10,19 @@ class DimDate(Base):
     
     date_key = Column(INTEGER, primary_key=True)
     full_date = Column(DATE, nullable=False)
-    day_of_week = Column(INTEGER)
-    day_name = Column(VARCHAR(10))
-    day_of_month = Column(INTEGER)
-    day_of_year = Column(INTEGER)
-    week_of_year = Column(INTEGER)
-    month = Column(INTEGER)
-    month_name = Column(VARCHAR(10))
-    quarter = Column(INTEGER)
     year = Column(INTEGER)
-    is_weekend = Column(INTEGER)
-    is_holiday = Column(INTEGER)
+    month = Column(INTEGER)
+    month_name = Column(VARCHAR(20))
+    month_abbr = Column(VARCHAR(10))
+    day_of_month = Column(INTEGER)
+    day_of_week = Column(INTEGER)
+    day_name = Column(VARCHAR(20))
+    day_abbr = Column(VARCHAR(10))
+    week_of_year = Column(INTEGER)
+    is_weekend = Column(Boolean)
+    is_holiday = Column(Boolean)
+    quarter_name = Column(VARCHAR(20))
+    year_month = Column(VARCHAR(10))
 
 class DimVehicle(Base):
     __tablename__ = "dim_vehicle"

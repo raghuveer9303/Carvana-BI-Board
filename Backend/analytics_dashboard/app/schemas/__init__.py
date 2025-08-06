@@ -8,17 +8,19 @@ class DimDateSchema(BaseModel):
     
     date_key: int
     full_date: date
-    day_of_week: Optional[int] = None
-    day_name: Optional[str] = None
-    day_of_month: Optional[int] = None
-    day_of_year: Optional[int] = None
-    week_of_year: Optional[int] = None
+    year: Optional[int] = None
     month: Optional[int] = None
     month_name: Optional[str] = None
-    quarter: Optional[int] = None
-    year: Optional[int] = None
-    is_weekend: Optional[int] = None
-    is_holiday: Optional[int] = None
+    month_abbr: Optional[str] = None
+    day_of_month: Optional[int] = None
+    day_of_week: Optional[int] = None
+    day_name: Optional[str] = None
+    day_abbr: Optional[str] = None
+    week_of_year: Optional[int] = None
+    is_weekend: Optional[bool] = None
+    is_holiday: Optional[bool] = None
+    quarter_name: Optional[str] = None
+    year_month: Optional[str] = None
 
 class DimVehicleSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
