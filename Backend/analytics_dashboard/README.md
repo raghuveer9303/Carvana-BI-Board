@@ -9,7 +9,7 @@ A FastAPI-based4. **Update database connection**
    ENVIRONMENT=dev
    
    # Or override with custom DATABASE_URL:
-   # DATABASE_URL=postgresql://admin:raghu@123@your_host:5432/carvana_db
+   # DATABASE_URL=postgresql://postgres:postgres@your_host:5432/carvana_db
    ```ytics dashboard for Carvana vehicle inventory and sales data.
 
 ## Features

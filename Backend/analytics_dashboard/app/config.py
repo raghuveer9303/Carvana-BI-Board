@@ -7,8 +7,8 @@ def _get_database_url() -> str:
     """Build database URL from environment variables or defaults"""
     ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
     
-    DB_USER = "admin"
-    DB_PASSWORD = "raghu@123"  # Raw password (will be URL-encoded)
+    DB_USER = "postgres"
+    DB_PASSWORD = "postgres"  # Simple password
     DB_NAME = "carvana_db"
     DB_PORT = "5432"
     
