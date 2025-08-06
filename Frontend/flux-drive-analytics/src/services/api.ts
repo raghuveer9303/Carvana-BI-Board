@@ -80,6 +80,37 @@ export interface BrandMetrics {
   }>;
 }
 
+export interface DetailedBrandAnalysis {
+  brand_name: string;
+  basic_metrics: {
+    total_vehicles: number;
+    average_price: number;
+    total_sales_30_days: number;
+    total_revenue_30_days: number;
+    avg_days_to_sell: number;
+  };
+  sales_by_model: Array<{
+    model: string;
+    sales_count: number;
+    avg_price: number;
+    total_revenue: number;
+    avg_days_to_sell: number;
+  }>;
+  price_distribution: Array<{
+    price_range: string;
+    inventory_count: number;
+  }>;
+  sales_trend: Array<{
+    week_start: string | null;
+    sales_count: number;
+    avg_price: number;
+  }>;
+  inventory_age: Array<{
+    age_group: string;
+    inventory_count: number;
+  }>;
+}
+
 export const fetchBrandMetrics = async (brandName: string): Promise<BrandMetrics> => {
   try {
     const response = await apiClient.get<BrandMetrics>(`/brand/${encodeURIComponent(brandName)}`);
@@ -87,6 +118,16 @@ export const fetchBrandMetrics = async (brandName: string): Promise<BrandMetrics
   } catch (error) {
     console.error(`Failed to fetch brand metrics for ${brandName}:`, error);
     throw new Error(`Failed to fetch metrics for ${brandName}. Please try again.`);
+  }
+};
+
+export const fetchDetailedBrandAnalysis = async (brandName: string): Promise<DetailedBrandAnalysis> => {
+  try {
+    const response = await apiClient.get<DetailedBrandAnalysis>(`/brand/${encodeURIComponent(brandName)}/detailed`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch detailed brand analysis for ${brandName}:`, error);
+    throw new Error(`Failed to fetch detailed analysis for ${brandName}. Please try again.`);
   }
 };
 

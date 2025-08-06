@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc, and_, case
+from sqlalchemy import func, desc, and_, case, text
 from typing import List
 from datetime import date, datetime, timedelta
 import logging
@@ -19,8 +19,8 @@ from .schemas import (
 )
 
 app = FastAPI(
-    title="Carvana Analytics Dashboard API",
-    description="Analytics API for Carvana vehicle inventory and sales data",
+    title="Autovana Analytics Dashboard API",
+    description="Analytics API for Autovana used car website vehicle inventory and sales data",
     version="1.0.0"
 )
 
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 @app.get("/")
 async def root():
-    return {"message": "Carvana Analytics Dashboard API"}
+    return {"message": "Autovana Analytics Dashboard API"}
 
 @app.get("/health")
 async def health_check():
@@ -186,8 +186,8 @@ async def get_brand_metrics(brand_name: str, db: Session = Depends(get_db)):
         # Get the most recent inventory date
         most_recent_date = db.query(func.max(FactDailyInventory.date_key)).scalar()
         
-        # Calculate 30 days ago
-        today = date.today()
+        # Calculate 30 days ago (with 2-day lag)
+        today = date.today() - timedelta(days=2)  # 2-day lag
         thirty_days_ago = today - timedelta(days=30)
         thirty_days_ago_key = int(thirty_days_ago.strftime("%Y%m%d"))
         
@@ -265,14 +265,207 @@ async def get_brand_metrics(brand_name: str, db: Session = Depends(get_db)):
         logger.error(f"Error getting brand metrics for {brand_name}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/brand/{brand_name}/detailed")
+async def get_detailed_brand_analysis(brand_name: str, db: Session = Depends(get_db)):
+    """Get comprehensive detailed analysis for a specific brand"""
+    try:
+        # Get the most recent inventory date
+        most_recent_date = db.query(func.max(FactDailyInventory.date_key)).scalar()
+        
+        # Calculate date ranges
+        today = date.today()
+        thirty_days_ago = today - timedelta(days=30)
+        thirty_days_ago_key = int(thirty_days_ago.strftime("%Y%m%d"))
+        ninety_days_ago = today - timedelta(days=90)
+        ninety_days_ago_key = int(ninety_days_ago.strftime("%Y%m%d"))
+        
+        # Basic metrics
+        total_vehicles = db.query(func.count(func.distinct(FactDailyInventory.vin))).filter(
+            FactDailyInventory.date_key == most_recent_date,
+            DimVehicle.brand == brand_name
+        ).join(
+            DimVehicle, FactDailyInventory.vehicle_key == DimVehicle.vehicle_key
+        ).scalar() or 0
+        
+        avg_price = db.query(func.avg(FactDailyInventory.price)).filter(
+            FactDailyInventory.date_key == most_recent_date,
+            DimVehicle.brand == brand_name,
+            FactDailyInventory.price.isnot(None),
+            FactDailyInventory.price > 0
+        ).join(
+            DimVehicle, FactDailyInventory.vehicle_key == DimVehicle.vehicle_key
+        ).scalar() or 0
+        
+        # Sales breakdown by model (last 30 days)
+        sales_by_model = db.query(
+            DimVehicle.model,
+            func.count(FactSalesEvents.vin).label('sales_count'),
+            func.avg(FactSalesEvents.sale_price).label('avg_price'),
+            func.sum(FactSalesEvents.sale_price).label('total_revenue'),
+            func.avg(FactSalesEvents.days_to_sell).label('avg_days_to_sell')
+        ).join(
+            FactSalesEvents, DimVehicle.vehicle_key == FactSalesEvents.vehicle_key
+        ).filter(
+            FactSalesEvents.sale_date_key >= thirty_days_ago_key,
+            FactSalesEvents.sale_date_key <= int(today.strftime("%Y%m%d")),
+            DimVehicle.brand == brand_name
+        ).group_by(
+            DimVehicle.model
+        ).order_by(
+            desc(func.count(FactSalesEvents.vin))
+        ).all()
+        
+        # Price distribution for current inventory
+        price_distribution = db.query(
+            DimPriceRange.range_name,
+            func.count(FactDailyInventory.vin).label('inventory_count')
+        ).join(
+            FactDailyInventory, DimPriceRange.price_range_key == FactDailyInventory.price_range_key
+        ).join(
+            DimVehicle, FactDailyInventory.vehicle_key == DimVehicle.vehicle_key
+        ).filter(
+            FactDailyInventory.date_key == most_recent_date,
+            DimVehicle.brand == brand_name
+        ).group_by(
+            DimPriceRange.range_name
+        ).order_by(
+            DimPriceRange.min_price
+        ).all()
+        
+        # Sales trend over last 90 days (weekly)
+        sales_trend = db.query(
+            DimDate.full_date,
+            func.count(FactSalesEvents.vin).label('sales_count'),
+            func.avg(FactSalesEvents.sale_price).label('avg_price')
+        ).join(
+            FactSalesEvents, DimDate.date_key == FactSalesEvents.sale_date_key
+        ).join(
+            DimVehicle, FactSalesEvents.vehicle_key == DimVehicle.vehicle_key
+        ).filter(
+            FactSalesEvents.sale_date_key >= ninety_days_ago_key,
+            FactSalesEvents.sale_date_key <= int(today.strftime("%Y%m%d")),
+            DimVehicle.brand == brand_name
+        ).group_by(
+            DimDate.full_date
+        ).order_by(
+            DimDate.full_date
+        ).limit(12).all()
+        
+        # Inventory age analysis
+        inventory_age = db.query(
+            case(
+                (FactDailyInventory.days_on_lot <= 7, '0-7 days'),
+                (FactDailyInventory.days_on_lot <= 14, '8-14 days'),
+                (FactDailyInventory.days_on_lot <= 30, '15-30 days'),
+                (FactDailyInventory.days_on_lot <= 60, '31-60 days'),
+                (FactDailyInventory.days_on_lot <= 90, '61-90 days'),
+                else_='90+ days'
+            ).label('age_group'),
+            func.count(FactDailyInventory.vin).label('inventory_count')
+        ).join(
+            DimVehicle, FactDailyInventory.vehicle_key == DimVehicle.vehicle_key
+        ).filter(
+            FactDailyInventory.date_key == most_recent_date,
+            DimVehicle.brand == brand_name,
+            FactDailyInventory.days_on_lot > 0
+        ).group_by(
+            case(
+                (FactDailyInventory.days_on_lot <= 7, '0-7 days'),
+                (FactDailyInventory.days_on_lot <= 14, '8-14 days'),
+                (FactDailyInventory.days_on_lot <= 30, '15-30 days'),
+                (FactDailyInventory.days_on_lot <= 60, '31-60 days'),
+                (FactDailyInventory.days_on_lot <= 90, '61-90 days'),
+                else_='90+ days'
+            )
+        ).order_by(
+            case(
+                (FactDailyInventory.days_on_lot <= 7, 1),
+                (FactDailyInventory.days_on_lot <= 14, 2),
+                (FactDailyInventory.days_on_lot <= 30, 3),
+                (FactDailyInventory.days_on_lot <= 60, 4),
+                (FactDailyInventory.days_on_lot <= 90, 5),
+                else_=6
+            )
+        ).all()
+        
+        # Performance metrics
+        total_sales_30_days = sum(model.sales_count for model in sales_by_model)
+        total_revenue_30_days = sum(float(model.total_revenue or 0) for model in sales_by_model)
+        avg_days_to_sell = db.query(func.avg(FactSalesEvents.days_to_sell)).filter(
+            FactSalesEvents.sale_date_key >= thirty_days_ago_key,
+            FactSalesEvents.sale_date_key <= int(today.strftime("%Y%m%d")),
+            DimVehicle.brand == brand_name,
+            FactSalesEvents.days_to_sell > 0,
+            FactSalesEvents.days_to_sell <= 365
+        ).join(
+            DimVehicle, FactSalesEvents.vehicle_key == DimVehicle.vehicle_key
+        ).scalar() or 0
+        
+        return {
+            "brand_name": brand_name,
+            "basic_metrics": {
+                "total_vehicles": total_vehicles,
+                "average_price": float(avg_price),
+                "total_sales_30_days": total_sales_30_days,
+                "total_revenue_30_days": float(total_revenue_30_days),
+                "avg_days_to_sell": float(avg_days_to_sell)
+            },
+            "sales_by_model": [
+                {
+                    "model": result.model,
+                    "sales_count": result.sales_count,
+                    "avg_price": float(result.avg_price or 0),
+                    "total_revenue": float(result.total_revenue or 0),
+                    "avg_days_to_sell": float(result.avg_days_to_sell or 0)
+                }
+                for result in sales_by_model
+            ],
+            "price_distribution": [
+                {
+                    "price_range": result.range_name,
+                    "inventory_count": result.inventory_count
+                }
+                for result in price_distribution
+            ],
+            "sales_trend": [
+                {
+                    "week_start": result.full_date.strftime("%Y-%m-%d") if result.full_date else None,
+                    "sales_count": result.sales_count,
+                    "avg_price": float(result.avg_price or 0)
+                }
+                for result in sales_trend
+            ],
+            "inventory_age": [
+                {
+                    "age_group": result.age_group,
+                    "inventory_count": result.inventory_count
+                }
+                for result in inventory_age
+            ]
+        }
+    except Exception as e:
+        logger.error(f"Error getting detailed brand analysis for {brand_name}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 async def get_kpis(db: Session, today_key: int) -> KPIResponse:
     """Get Key Performance Indicators"""
     logger.info(f"Getting KPIs for date_key: {today_key}")
     
-    # Check inventory - count distinct VINs where status = 'active' (no date filter)
+    # Check inventory - count distinct VINs where status = 'active' for the specific date
     inventory_today = db.query(func.count(func.distinct(FactDailyInventory.vin))).filter(
+        FactDailyInventory.date_key == today_key,
         FactDailyInventory.status == 'active'
     ).scalar() or 0
+    
+    # If no inventory for today, try the most recent date
+    if not inventory_today:
+        most_recent_date = db.query(func.max(FactDailyInventory.date_key)).scalar()
+        logger.info(f"No inventory for {today_key}, using most recent date: {most_recent_date}")
+        if most_recent_date:
+            inventory_today = db.query(func.count(func.distinct(FactDailyInventory.vin))).filter(
+                FactDailyInventory.date_key == most_recent_date,
+                FactDailyInventory.status == 'active'
+            ).scalar() or 0
     
     # Check sales for today with data quality filters
     sales_today = db.query(func.count(FactSalesEvents.vin)).filter(
@@ -289,8 +482,8 @@ async def get_kpis(db: Session, today_key: int) -> KPIResponse:
         ).scalar() or 0
         logger.info(f"No sales today, total sales in database: {total_sales_check}")
     
-    # Calculate 30 days ago properly
-    today = date.today()
+    # Calculate 30 days ago properly (with 2-day lag)
+    today = date.today() - timedelta(days=2)  # 2-day lag
     thirty_days_ago = today - timedelta(days=30)
     thirty_days_ago_key = int(thirty_days_ago.strftime("%Y%m%d"))
     
@@ -322,7 +515,22 @@ async def get_kpis(db: Session, today_key: int) -> KPIResponse:
 
 async def get_daily_sales_trend(db: Session, start_date_key: int, end_date_key: int) -> List[DailySalesTrendItem]:
     """Get daily sales trend for the last 30 days"""
-    results = db.query(
+    logger.info(f"Getting daily sales trend from {start_date_key} to {end_date_key}")
+    
+    # First, ensure we have all dates in the range
+    all_dates = db.query(DimDate).filter(
+        DimDate.date_key >= start_date_key,
+        DimDate.date_key <= end_date_key
+    ).order_by(DimDate.date_key).all()
+    
+    logger.info(f"Found {len(all_dates)} dates in range")
+    
+    # Create a dictionary to store sales data by date
+    sales_by_date = {}
+    
+    # Get sales data for the date range
+    sales_results = db.query(
+        DimDate.date_key,
         DimDate.full_date,
         func.count(FactSalesEvents.vin).label('sales_count'),
         func.coalesce(func.sum(FactSalesEvents.sale_price), 0).label('total_sales_amount')
@@ -332,19 +540,33 @@ async def get_daily_sales_trend(db: Session, start_date_key: int, end_date_key: 
         DimDate.date_key >= start_date_key,
         DimDate.date_key <= end_date_key
     ).group_by(
-        DimDate.full_date, DimDate.date_key
-    ).order_by(
-        DimDate.date_key
+        DimDate.date_key, DimDate.full_date
     ).all()
     
-    return [
-        DailySalesTrendItem(
-            date=result.full_date,
-            sales_count=result.sales_count,
-            total_sales_amount=float(result.total_sales_amount or 0)
+    logger.info(f"Found {len(sales_results)} sales records")
+    
+    # Create a lookup dictionary for sales data
+    for result in sales_results:
+        sales_by_date[result.date_key] = {
+            'sales_count': result.sales_count,
+            'total_sales_amount': result.total_sales_amount
+        }
+    
+    # Build the complete timeline with all dates
+    timeline_items = []
+    for date_record in all_dates:
+        sales_data = sales_by_date.get(date_record.date_key, {'sales_count': 0, 'total_sales_amount': 0})
+        
+        timeline_items.append(
+            DailySalesTrendItem(
+                date=date_record.full_date,
+                sales_count=sales_data['sales_count'],
+                total_sales_amount=float(sales_data['total_sales_amount'] or 0)
+            )
         )
-        for result in results
-    ]
+    
+    logger.info(f"Returning {len(timeline_items)} timeline items")
+    return timeline_items
 
 async def get_inventory_by_price_range(db: Session, date_key: int) -> List[InventoryByPriceRangeItem]:
     """Get inventory distribution by price range"""

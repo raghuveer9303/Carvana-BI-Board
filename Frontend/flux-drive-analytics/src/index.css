@@ -8,31 +8,31 @@
 
 @layer base {
   :root {
-    /* Apple-inspired refined light theme with Material Design accents */
-    --background: 0 0% 97%;
-    --foreground: 0 0% 9%;
+    /* Autovana - Slightly darker Apple-inspired theme with Material Design accents */
+    --background: 0 0% 93%;
+    --foreground: 0 0% 12%;
 
     /* Glass morphism cards inspired by Apple */
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
-    --card-glass: rgba(255, 255, 255, 0.8);
+    --card: 0 0% 96%;
+    --card-foreground: 0 0% 12%;
+    --card-glass: rgba(255, 255, 255, 0.75);
     --card-backdrop: blur(20px);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
+    --popover: 0 0% 96%;
+    --popover-foreground: 0 0% 12%;
 
-    /* Apple Blue with Google Material refinement */
+    /* Autovana Blue with Google Material refinement */
     --primary: 213 93% 68%;
     --primary-foreground: 0 0% 100%;
     --primary-light: 213 93% 88%;
     --primary-dark: 213 93% 48%;
 
     /* Subtle secondary inspired by Apple's design */
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 9% 46%;
+    --secondary: 220 14% 92%;
+    --secondary-foreground: 220 9% 42%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 220 14% 92%;
+    --muted-foreground: 220 9% 42%;
 
     /* Google Material Green for success */
     --accent: 142 76% 36%;
@@ -41,8 +41,8 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
+    --border: 220 13% 87%;
+    --input: 220 13% 87%;
     --ring: 213 93% 68%;
 
     /* Material Design semantic colors */
@@ -63,10 +63,10 @@
     --error-light: 0 84% 88%;
 
     /* Dashboard specific colors */
-    --dashboard-bg: linear-gradient(135deg, hsl(220 26% 96%) 0%, hsl(213 27% 95%) 100%);
-    --dashboard-card: rgba(255, 255, 255, 0.9);
-    --dashboard-header: rgba(255, 255, 255, 0.95);
-    --dashboard-nav: rgba(248, 250, 252, 0.8);
+    --dashboard-bg: linear-gradient(135deg, hsl(220 26% 92%) 0%, hsl(213 27% 91%) 100%);
+    --dashboard-card: rgba(255, 255, 255, 0.85);
+    --dashboard-header: rgba(255, 255, 255, 0.9);
+    --dashboard-nav: rgba(248, 250, 252, 0.75);
 
     /* Apple-style radius */
     --radius: 1rem;

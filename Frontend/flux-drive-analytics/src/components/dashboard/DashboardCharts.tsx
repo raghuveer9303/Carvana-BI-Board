@@ -44,9 +44,23 @@ interface BottomChartProps {
 // Apple-inspired custom tooltip
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
+    // Format the date label
+    const formatDate = (dateValue: string) => {
+      try {
+        const date = new Date(dateValue);
+        return date.toLocaleDateString('en-US', { 
+          weekday: 'short', 
+          month: 'short', 
+          day: 'numeric' 
+        });
+      } catch {
+        return dateValue;
+      }
+    };
+
     return (
       <div className="glass rounded-2xl border-0 p-4 shadow-glass backdrop-blur-apple">
-        <p className="font-display font-semibold text-foreground mb-2">{label}</p>
+        <p className="font-display font-semibold text-foreground mb-2">{formatDate(label)}</p>
         {payload.map((entry: any, index: number) => (
           <div key={index} className="flex items-center justify-between gap-4 py-1">
             <div className="flex items-center gap-2">
@@ -138,7 +152,10 @@ export function TopCharts({
                 dataKey="date" 
                 stroke="hsl(var(--muted-foreground))"
                 fontSize={12}
-                tickFormatter={(value) => new Date(value).getDate().toString()}
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  return `${date.getMonth() + 1}/${date.getDate()}`;
+                }}
                 axisLine={false}
                 tickLine={false}
               />
