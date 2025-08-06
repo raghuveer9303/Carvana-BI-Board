@@ -229,6 +229,22 @@ export function DashboardHeader({
               </span>
             </Badge>
 
+            {/* Brandwise Analysis Link */}
+            <Link to="/brandwise-analysis">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  "px-3 py-2 h-10 rounded-xl text-slate-600",
+                  "hover:bg-slate-100/50 hover:text-slate-700 transition-all duration-300",
+                  "active:scale-95"
+                )}
+              >
+                <BarChart3 className="h-4 w-4 mr-2 text-slate-500" />
+                <span className="font-medium hidden md:inline">Brand Analysis</span>
+              </Button>
+            </Link>
+
             {/* Project Docs Link */}
             <Link to="/docs">
               <Button
