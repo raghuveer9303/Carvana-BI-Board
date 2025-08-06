@@ -1,10 +1,27 @@
 import os
 from pydantic_settings import BaseSettings
 from typing import List
+from urllib.parse import quote_plus
+
+def _get_database_url() -> str:
+    """Build database URL from environment variables or defaults"""
+    ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
+    
+    DB_USER = "admin"
+    DB_PASSWORD = quote_plus("raghu@123")  # URL encode the password
+    DB_NAME = "carvana_db"
+    DB_PORT = "5432"
+    
+    if ENVIRONMENT == "prod":
+        DB_HOST = "postgres_db"
+    else:  # dev environment
+        DB_HOST = "brahma"
+    
+    return f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 class Settings(BaseSettings):
-    # Database - Use environment variable or fallback
-    database_url: str = os.getenv("DATABASE_URL", "postgresql://admin:raghu%40123@postgres_db:5432/carvana_db")
+    # Database - Use environment variable or build from components
+    database_url: str = os.getenv("DATABASE_URL") or _get_database_url()
     
     # API
     api_title: str = "Carvana Analytics Dashboard API"
