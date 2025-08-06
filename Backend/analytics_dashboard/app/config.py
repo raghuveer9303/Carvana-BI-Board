@@ -16,7 +16,10 @@ class Settings(BaseSettings):
         "http://localhost:9517",
         "https://localhost:9517",
         "http://127.0.0.1:9517",
-        "https://127.0.0.1:9517"
+        "https://127.0.0.1:9517",
+        "http://brahma:9517",
+        "https://brahma:9517",
+        "*"  # Allow all origins when behind nginx proxy
     ]
     
     # Logging

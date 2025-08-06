@@ -3,7 +3,7 @@ import { DashboardData } from '../types/dashboard';
 
 // Create axios instance with base URL
 const apiClient: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:9515/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
