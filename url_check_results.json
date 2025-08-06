@@ -1,0 +1,379 @@
+{
+  "summary": {
+    "total": 41,
+    "working": 33,
+    "broken": 8,
+    "success_rate": 80.48780487804879
+  },
+  "results": [
+    {
+      "brand": "Lincoln",
+      "url": "https://worldvectorlogo.com/logo/lincoln-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/lincoln-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16544,
+      "is_image": false
+    },
+    {
+      "brand": "Honda",
+      "url": "https://worldvectorlogo.com/logo/honda-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/honda-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16240,
+      "is_image": false
+    },
+    {
+      "brand": "Ram",
+      "url": "https://worldvectorlogo.com/logo/ram-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/ram-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16168,
+      "is_image": false
+    },
+    {
+      "brand": "VinFast",
+      "url": "https://worldvectorlogo.com/logo/vinfast-1",
+      "status_code": 404,
+      "final_url": "https://worldvectorlogo.com/logo/vinfast-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 8869,
+      "is_image": false
+    },
+    {
+      "brand": "Ford",
+      "url": "https://worldvectorlogo.com/logo/ford-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/ford-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16471,
+      "is_image": false
+    },
+    {
+      "brand": "Scion",
+      "url": "https://worldvectorlogo.com/logo/scion-1",
+      "status_code": 404,
+      "final_url": "https://worldvectorlogo.com/logo/scion-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 8869,
+      "is_image": false
+    },
+    {
+      "brand": "Maserati",
+      "url": "https://worldvectorlogo.com/logo/maserati-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/maserati-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16726,
+      "is_image": false
+    },
+    {
+      "brand": "Dodge",
+      "url": "https://worldvectorlogo.com/logo/dodge-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/dodge-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16498,
+      "is_image": false
+    },
+    {
+      "brand": "Chevrolet",
+      "url": "https://worldvectorlogo.com/logo/chevrolet-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/chevrolet-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16940,
+      "is_image": false
+    },
+    {
+      "brand": "INFINITI",
+      "url": "https://worldvectorlogo.com/logo/infiniti-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/infiniti-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 15171,
+      "is_image": false
+    },
+    {
+      "brand": "MINI",
+      "url": "https://worldvectorlogo.com/logo/mini-1",
+      "status_code": 404,
+      "final_url": "https://worldvectorlogo.com/logo/mini-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 8869,
+      "is_image": false
+    },
+    {
+      "brand": "Lucid",
+      "url": "https://worldvectorlogo.com/logo/lucid-1",
+      "status_code": 404,
+      "final_url": "https://worldvectorlogo.com/logo/lucid-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 8869,
+      "is_image": false
+    },
+    {
+      "brand": "Porsche",
+      "url": "https://worldvectorlogo.com/logo/porsche-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/porsche-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16935,
+      "is_image": false
+    },
+    {
+      "brand": "Alfa Romeo",
+      "url": "https://worldvectorlogo.com/logo/alfaromeo-1",
+      "status_code": 404,
+      "final_url": "https://worldvectorlogo.com/logo/alfaromeo-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 8869,
+      "is_image": false
+    },
+    {
+      "brand": "smart",
+      "url": "https://worldvectorlogo.com/logo/smart-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/smart-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16356,
+      "is_image": false
+    },
+    {
+      "brand": "Audi",
+      "url": "https://worldvectorlogo.com/logo/audi-1",
+      "status_code": 404,
+      "final_url": "https://worldvectorlogo.com/logo/audi-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 8869,
+      "is_image": false
+    },
+    {
+      "brand": "Tesla",
+      "url": "https://worldvectorlogo.com/logo/tesla-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/tesla-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16443,
+      "is_image": false
+    },
+    {
+      "brand": "Jaguar",
+      "url": "https://worldvectorlogo.com/logo/jaguar-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/jaguar-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16559,
+      "is_image": false
+    },
+    {
+      "brand": "Lexus",
+      "url": "https://worldvectorlogo.com/logo/lexus-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/lexus-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16504,
+      "is_image": false
+    },
+    {
+      "brand": "Kia",
+      "url": "https://worldvectorlogo.com/logo/kia-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/kia-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16296,
+      "is_image": false
+    },
+    {
+      "brand": "Mercedes-Benz",
+      "url": "https://worldvectorlogo.com/logo/mercedesbenz-1",
+      "status_code": 404,
+      "final_url": "https://worldvectorlogo.com/logo/mercedesbenz-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 8869,
+      "is_image": false
+    },
+    {
+      "brand": "Land Rover",
+      "url": "https://worldvectorlogo.com/logo/landrover-1",
+      "status_code": 404,
+      "final_url": "https://worldvectorlogo.com/logo/landrover-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 8869,
+      "is_image": false
+    },
+    {
+      "brand": "Jeep",
+      "url": "https://worldvectorlogo.com/logo/jeep-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/jeep-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16295,
+      "is_image": false
+    },
+    {
+      "brand": "Rivian",
+      "url": "https://worldvectorlogo.com/logo/rivian-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/rivian-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16996,
+      "is_image": false
+    },
+    {
+      "brand": "Volvo",
+      "url": "https://worldvectorlogo.com/logo/volvo-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/volvo-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16360,
+      "is_image": false
+    },
+    {
+      "brand": "Buick",
+      "url": "https://worldvectorlogo.com/logo/buick-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/buick-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16388,
+      "is_image": false
+    },
+    {
+      "brand": "Cadillac",
+      "url": "https://worldvectorlogo.com/logo/cadillac-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/cadillac-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16825,
+      "is_image": false
+    },
+    {
+      "brand": "Acura",
+      "url": "https://worldvectorlogo.com/logo/acura-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/acura-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16468,
+      "is_image": false
+    },
+    {
+      "brand": "Nissan",
+      "url": "https://worldvectorlogo.com/logo/nissan-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/nissan-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16581,
+      "is_image": false
+    },
+    {
+      "brand": "Polestar",
+      "url": "https://worldvectorlogo.com/logo/polestar-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/polestar-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16938,
+      "is_image": false
+    },
+    {
+      "brand": "Genesis",
+      "url": "https://worldvectorlogo.com/logo/genesis-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/genesis-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16458,
+      "is_image": false
+    },
+    {
+      "brand": "Hyundai",
+      "url": "https://worldvectorlogo.com/logo/hyundai-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/hyundai-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 17278,
+      "is_image": false
+    },
+    {
+      "brand": "MAZDA",
+      "url": "https://worldvectorlogo.com/logo/mazda-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/mazda-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16166,
+      "is_image": false
+    },
+    {
+      "brand": "Mitsubishi",
+      "url": "https://worldvectorlogo.com/logo/mitsubishi-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/mitsubishi-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16730,
+      "is_image": false
+    },
+    {
+      "brand": "FIAT",
+      "url": "https://worldvectorlogo.com/logo/fiat-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/fiat-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16223,
+      "is_image": false
+    },
+    {
+      "brand": "Subaru",
+      "url": "https://worldvectorlogo.com/logo/subaru-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/subaru-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16271,
+      "is_image": false
+    },
+    {
+      "brand": "BMW",
+      "url": "https://worldvectorlogo.com/logo/bmw-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/bmw-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16306,
+      "is_image": false
+    },
+    {
+      "brand": "Volkswagen",
+      "url": "https://worldvectorlogo.com/logo/volkswagen-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/volkswagen-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16654,
+      "is_image": false
+    },
+    {
+      "brand": "Chrysler",
+      "url": "https://worldvectorlogo.com/logo/chrysler-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/chrysler-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16631,
+      "is_image": false
+    },
+    {
+      "brand": "Toyota",
+      "url": "https://worldvectorlogo.com/logo/toyota-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/toyota-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16598,
+      "is_image": false
+    },
+    {
+      "brand": "GMC",
+      "url": "https://worldvectorlogo.com/logo/gmc-1",
+      "status_code": 200,
+      "final_url": "https://worldvectorlogo.com/logo/gmc-1",
+      "content_type": "text/html; charset=UTF-8",
+      "content_length": 16960,
+      "is_image": false
+    }
+  ]
+}
