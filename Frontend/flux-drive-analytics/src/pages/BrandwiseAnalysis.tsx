@@ -8,7 +8,7 @@ import { SalesByBrand } from "@/types/dashboard";
 import { fetchBrandMetrics, fetchDetailedBrandAnalysis, BrandMetrics, DetailedBrandAnalysis } from "@/services/api";
 import BrandDetailedAnalysis from "@/components/dashboard/BrandDetailedAnalysis";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -72,12 +72,21 @@ const brands = [
 
 const BrandwiseAnalysis = () => {
   const { data, isLoading, error, refetch } = useDashboardData();
+  const [searchParams] = useSearchParams();
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [brandMetrics, setBrandMetrics] = useState<BrandMetrics | null>(null);
   const [detailedAnalysis, setDetailedAnalysis] = useState<DetailedBrandAnalysis | null>(null);
   const [isLoadingBrand, setIsLoadingBrand] = useState(false);
   const [viewMode, setViewMode] = useState<'basic' | 'detailed'>('basic');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Check for brand parameter in URL on component mount
+  useEffect(() => {
+    const brandFromUrl = searchParams.get('brand');
+    if (brandFromUrl && brands.includes(brandFromUrl)) {
+      handleBrandClick(brandFromUrl);
+    }
+  }, [searchParams]);
 
   const handleRefresh = () => {
     refetch();
@@ -151,7 +160,7 @@ const BrandwiseAnalysis = () => {
                     Connection Error
                   </h3>
                   <AlertDescription className="text-muted-foreground text-base leading-relaxed">
-                    Unable to connect to the Carvana Analytics API. Please ensure the backend service is running.
+                    Unable to connect to the Autovana Analytics API. Please ensure the backend service is running.
                     {error instanceof Error && (
                       <span className="block mt-2 text-sm font-mono text-error/80">
                         {error.message}

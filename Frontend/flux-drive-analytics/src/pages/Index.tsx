@@ -3,8 +3,10 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
 import { DataTables } from "@/components/dashboard/DataTables";
+import { BrandSelector } from "@/components/dashboard/BrandSelector";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useNavigate } from "react-router-dom";
 
 import { 
   Car, 
@@ -16,9 +18,15 @@ import {
 
 const Index = () => {
   const { data, isLoading, error, refetch } = useDashboardData();
+  const navigate = useNavigate();
 
   const handleRefresh = () => {
     refetch();
+  };
+
+  const handleBrandSelect = (brand: string) => {
+    // Navigate to brand analysis page with the selected brand
+    navigate(`/brandwise-analysis?brand=${encodeURIComponent(brand)}`);
   };
 
   const handleExport = () => {
@@ -48,7 +56,7 @@ const Index = () => {
                     Connection Error
                   </h3>
                   <AlertDescription className="text-muted-foreground text-base leading-relaxed">
-                    Unable to connect to the Carvana Analytics API. Please ensure the backend service is running.
+                    Unable to connect to the Autovana Analytics API. Please ensure the backend service is running.
                     {error instanceof Error && (
                       <span className="block mt-2 text-sm font-mono text-error/80">
                         {error.message}
@@ -113,12 +121,12 @@ const Index = () => {
       color: "primary"
     },
     {
-      title: "Sales Today", 
+      title: "Sales Last 30 Days", 
       value: data.kpis.total_sales_today,
       icon: <TrendingUp className="h-7 w-7" />,
       gradient: "bg-gradient-success",
       trend: { value: 8.1, isPositive: true },
-      description: "Vehicles sold today",
+      description: "Vehicles sold in last 30 days",
       color: "success"
     },
     {
@@ -159,6 +167,11 @@ const Index = () => {
       />
       
       <main className="relative container mx-auto px-6 py-6 space-y-8">
+        {/* Brand Selector Section - Moved to Top */}
+        <section className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <BrandSelector onBrandSelect={handleBrandSelect} />
+        </section>
+
         {/* Hero Section with KPI Cards */}
         <section className="space-y-6">
           {/* KPI Cards Grid */}

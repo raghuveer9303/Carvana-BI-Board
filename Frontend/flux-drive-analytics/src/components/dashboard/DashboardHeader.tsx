@@ -129,7 +129,7 @@ export function DashboardHeader({
               
               <div className="space-y-1">
                 <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
-                  Carvana Analytics
+                  Autovana Analytics
                 </h1>
                 <p className="text-sm text-muted-foreground font-medium">
                   Real-Time Inventory & Market Intelligence

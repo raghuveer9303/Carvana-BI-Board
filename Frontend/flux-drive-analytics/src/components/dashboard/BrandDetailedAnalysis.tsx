@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { DetailedBrandAnalysis } from '@/services/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { 
   BarChart3, 
   PieChart, 
@@ -13,8 +15,31 @@ import {
   Clock,
   Target,
   Award,
-  Zap
+  Zap,
+  Search,
+  Filter,
+  Download,
+  BarChart as BarChartIcon,
+  LineChart as LineChartIcon,
+  PieChart as PieChartIcon,
+  Activity
 } from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+  Area,
+  AreaChart
+} from 'recharts';
 
 interface BrandDetailedAnalysisProps {
   data: DetailedBrandAnalysis;
@@ -24,10 +49,79 @@ interface BrandDetailedAnalysisProps {
 const BrandDetailedAnalysis: React.FC<BrandDetailedAnalysisProps> = ({ data, onBack }) => {
   const { basic_metrics, sales_by_model, price_distribution, sales_trend, inventory_age } = data;
   
-  // Calculate total revenue for percentage calculations
+  // State for table filtering and search
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPriceRange, setSelectedPriceRange] = useState<string>('all');
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>('all');
+  
+  // Calculate totals for percentage calculations
   const totalRevenue = sales_by_model.reduce((sum, model) => sum + model.total_revenue, 0);
   const totalSales = sales_by_model.reduce((sum, model) => sum + model.sales_count, 0);
   const totalInventory = price_distribution.reduce((sum, range) => sum + range.inventory_count, 0);
+
+  // Chart colors
+  const chartColors = {
+    primary: '#4F46E5',
+    success: '#059669',
+    warning: '#D97706',
+    info: '#0284C7',
+    purple: '#7C3AED',
+    pink: '#DB2777',
+    orange: '#EA580C',
+    teal: '#0D9488'
+  };
+
+  const brandColors = [
+    chartColors.primary,
+    chartColors.success,
+    chartColors.warning,
+    chartColors.info,
+    chartColors.purple,
+    chartColors.pink,
+    chartColors.orange,
+    chartColors.teal
+  ];
+
+  // Filtered data for table
+  const filteredData = useMemo(() => {
+    let filtered = sales_by_model;
+    
+    if (searchTerm) {
+      filtered = filtered.filter(model => 
+        model.model.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    return filtered;
+  }, [sales_by_model, searchTerm]);
+
+  // Custom tooltip for charts
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="glass rounded-2xl border-0 p-4 shadow-glass backdrop-blur-apple">
+          <p className="font-display font-semibold text-foreground mb-2">{label}</p>
+          {payload.map((entry: any, index: number) => (
+            <div key={index} className="flex items-center justify-between gap-4 py-1">
+              <div className="flex items-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: entry.color }}
+                />
+                <span className="text-sm text-muted-foreground">{entry.name}</span>
+              </div>
+              <span className="text-sm font-semibold text-foreground">
+                {typeof entry.value === 'number' && entry.name.includes('Price') 
+                  ? `$${entry.value.toLocaleString()}` 
+                  : entry.value}
+              </span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-8">
@@ -109,169 +203,334 @@ const BrandDetailedAnalysis: React.FC<BrandDetailedAnalysisProps> = ({ data, onB
         </Card>
       </div>
 
-      {/* Sales Breakdown by Model */}
-      <Card className="glass backdrop-blur-apple shadow-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <BarChart3 className="h-5 w-5" />
-            <span>Sales Breakdown by Model</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {sales_by_model.map((model, index) => (
-              <div key={model.model} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-sm font-bold text-primary">{index + 1}</span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-foreground">{model.model}</h4>
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <span>{model.sales_count} sales</span>
-                        <span>${model.avg_price.toLocaleString()} avg</span>
-                        <span>{Math.round(model.avg_days_to_sell)} days</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-semibold text-foreground">
-                      ${model.total_revenue.toLocaleString()}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {((model.total_revenue / totalRevenue) * 100).toFixed(1)}% of revenue
-                    </div>
-                  </div>
-                </div>
-                <Progress 
-                  value={(model.sales_count / totalSales) * 100} 
-                  className="h-2"
-                />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Charts Grid */}
+      {/* Four Meaningful Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Price Distribution */}
+        {/* Chart 1: Sales Trend Over Time */}
+        <Card className="glass backdrop-blur-apple shadow-card">
+          <CardHeader>
+                         <CardTitle className="flex items-center space-x-2">
+               <LineChartIcon className="h-5 w-5" />
+               <span>Sales Trend (90 Days)</span>
+             </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={sales_trend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="salesTrendGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={chartColors.primary} stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor={chartColors.primary} stopOpacity={0.0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                <XAxis 
+                  dataKey="week_start" 
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickFormatter={(value) => {
+                    if (!value) return '';
+                    const date = new Date(value);
+                    return `${date.getMonth() + 1}/${date.getDate()}`;
+                  }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis 
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Area
+                  type="monotone"
+                  dataKey="sales_count"
+                  stroke={chartColors.primary}
+                  strokeWidth={3}
+                  fill="url(#salesTrendGradient)"
+                  dot={{ fill: chartColors.primary, strokeWidth: 2, r: 4 }}
+                  name="Sales Count"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Chart 2: Price Distribution */}
         <Card className="glass backdrop-blur-apple shadow-card">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <PieChart className="h-5 w-5" />
+              <PieChartIcon className="h-5 w-5" />
               <span>Price Distribution</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {price_distribution.map((range, index) => (
-                <div key={range.price_range} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-foreground">{range.price_range}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {range.inventory_count} vehicles
-                    </span>
-                  </div>
-                  <Progress 
-                    value={(range.inventory_count / totalInventory) * 100} 
-                    className="h-2"
+            <ResponsiveContainer width="100%" height={300}>
+              <RechartsPieChart>
+                <Pie
+                  data={price_distribution}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={2}
+                  dataKey="inventory_count"
+                >
+                  {price_distribution.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={brandColors[index % brandColors.length]}
+                      className="hover:opacity-80 transition-opacity duration-200"
+                    />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div className="glass rounded-2xl border-0 p-4 shadow-glass backdrop-blur-apple">
+                          <p className="font-display font-semibold text-foreground mb-2">{data.price_range}</p>
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">Inventory: <span className="font-semibold text-foreground">{data.inventory_count}</span></p>
+                            <p className="text-sm text-muted-foreground">Share: <span className="font-semibold text-foreground">{((data.inventory_count / totalInventory) * 100).toFixed(1)}%</span></p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+              </RechartsPieChart>
+            </ResponsiveContainer>
+            
+            {/* Custom Legend */}
+            <div className="grid grid-cols-2 gap-2 mt-4">
+              {price_distribution.slice(0, 6).map((entry, index) => (
+                <div key={entry.price_range} className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-full" 
+                    style={{ backgroundColor: brandColors[index % brandColors.length] }}
                   />
+                  <span className="text-xs text-muted-foreground truncate">
+                    {entry.price_range} ({((entry.inventory_count / totalInventory) * 100).toFixed(1)}%)
+                  </span>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
 
-        {/* Inventory Age Analysis */}
+        {/* Chart 3: Sales by Model */}
+        <Card className="glass backdrop-blur-apple shadow-card">
+          <CardHeader>
+                         <CardTitle className="flex items-center space-x-2">
+               <BarChartIcon className="h-5 w-5" />
+               <span>Sales by Model</span>
+             </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={sales_by_model.slice(0, 8)} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="modelSalesGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={chartColors.success} stopOpacity={1}/>
+                    <stop offset="100%" stopColor={chartColors.success} stopOpacity={0.6}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                <XAxis 
+                  dataKey="model" 
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  axisLine={false}
+                  tickLine={false}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis 
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip 
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div className="glass rounded-2xl border-0 p-4 shadow-glass backdrop-blur-apple">
+                          <p className="font-display font-semibold text-foreground mb-2">{label}</p>
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">Sales: <span className="font-semibold text-foreground">{data.sales_count}</span></p>
+                            <p className="text-sm text-muted-foreground">Revenue: <span className="font-semibold text-foreground">${data.total_revenue.toLocaleString()}</span></p>
+                            <p className="text-sm text-muted-foreground">Avg Price: <span className="font-semibold text-foreground">${data.avg_price.toLocaleString()}</span></p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar 
+                  dataKey="sales_count" 
+                  fill="url(#modelSalesGradient)"
+                  radius={[8, 8, 0, 0]}
+                  name="Sales Count"
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Chart 4: Inventory Age Analysis */}
         <Card className="glass backdrop-blur-apple shadow-card">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5" />
+              <Activity className="h-5 w-5" />
               <span>Inventory Age Analysis</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {inventory_age.map((age, index) => {
-                const colors = [
-                  'bg-green-500',
-                  'bg-blue-500', 
-                  'bg-yellow-500',
-                  'bg-orange-500',
-                  'bg-red-500',
-                  'bg-purple-500'
-                ];
-                const color = colors[index % colors.length];
-                
-                return (
-                  <div key={age.age_group} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-foreground">{age.age_group}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {age.inventory_count} vehicles
-                      </span>
-                    </div>
-                    <div className="w-full bg-white/10 rounded-full h-2">
-                      <div
-                        className={`${color} h-2 rounded-full transition-all duration-500`}
-                        style={{ width: `${(age.inventory_count / totalInventory) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={inventory_age} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="ageAnalysisGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={chartColors.warning} stopOpacity={1}/>
+                    <stop offset="100%" stopColor={chartColors.warning} stopOpacity={0.6}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                <XAxis 
+                  dataKey="age_group" 
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis 
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip 
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="glass rounded-2xl border-0 p-4 shadow-glass backdrop-blur-apple">
+                          <p className="font-display font-semibold text-foreground mb-2">{label}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Inventory: <span className="font-semibold text-foreground">{payload[0].value} vehicles</span>
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar 
+                  dataKey="inventory_count" 
+                  fill="url(#ageAnalysisGradient)"
+                  radius={[8, 8, 0, 0]}
+                  name="Inventory Count"
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
 
-      {/* Sales Trend Chart */}
+      {/* Data Table with Filters and Search */}
       <Card className="glass backdrop-blur-apple shadow-card">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <TrendingUp className="h-5 w-5" />
-            <span>Sales Trend (Last 90 Days)</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {sales_trend.map((week, index) => (
-              <div key={week.week_start || index} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-foreground">
-                    {week.week_start ? new Date(week.week_start).toLocaleDateString() : `Week ${index + 1}`}
-                  </span>
-                  <div className="flex items-center space-x-4 text-sm">
-                    <span className="text-muted-foreground">{week.sales_count} sales</span>
-                    <span className="text-muted-foreground">${week.avg_price.toLocaleString()} avg</span>
-                  </div>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-3">
-                  <div
-                    className="bg-gradient-to-r from-primary to-primary/70 h-3 rounded-full transition-all duration-500"
-                    style={{ 
-                      width: `${(week.sales_count / Math.max(...sales_trend.map(w => w.sales_count))) * 100}%` 
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5" />
+              <span>Detailed Sales Data</span>
+            </CardTitle>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Download className="h-4 w-4" />
+              Export
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Performance Insights */}
-      <Card className="glass backdrop-blur-apple shadow-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Target className="h-5 w-5" />
-            <span>Performance Insights</span>
-          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Filters and Search */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search models..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="gap-2">
+                <Filter className="h-4 w-4" />
+                Filters
+              </Button>
+            </div>
+          </div>
+
+          {/* Data Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border/20">
+                  <th className="text-left py-3 px-4 font-semibold text-foreground">Model</th>
+                  <th className="text-left py-3 px-4 font-semibold text-foreground">Sales Count</th>
+                  <th className="text-left py-3 px-4 font-semibold text-foreground">Avg Price</th>
+                  <th className="text-left py-3 px-4 font-semibold text-foreground">Total Revenue</th>
+                  <th className="text-left py-3 px-4 font-semibold text-foreground">Avg Days to Sell</th>
+                  <th className="text-left py-3 px-4 font-semibold text-foreground">Revenue Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map((model, index) => (
+                  <tr key={model.model} className="border-b border-border/10 hover:bg-white/5 transition-colors">
+                    <td className="py-3 px-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <span className="text-sm font-bold text-primary">{index + 1}</span>
+                        </div>
+                        <span className="font-medium text-foreground">{model.model}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="font-semibold text-foreground">{model.sales_count}</span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="font-semibold text-foreground">${model.avg_price.toLocaleString()}</span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="font-semibold text-foreground">${model.total_revenue.toLocaleString()}</span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="font-semibold text-foreground">{Math.round(model.avg_days_to_sell)} days</span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center space-x-2">
+                        <Progress 
+                          value={(model.total_revenue / totalRevenue) * 100} 
+                          className="w-20 h-2"
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          {((model.total_revenue / totalRevenue) * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Summary Stats */}
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-border/20">
             <div className="text-center p-4 rounded-2xl bg-green-500/10 border border-green-500/20">
               <Award className="h-8 w-8 text-green-500 mx-auto mb-2" />
               <div className="text-2xl font-display font-bold text-foreground">

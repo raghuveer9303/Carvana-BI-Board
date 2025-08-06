@@ -451,36 +451,26 @@ async def get_kpis(db: Session, today_key: int) -> KPIResponse:
     """Get Key Performance Indicators"""
     logger.info(f"Getting KPIs for date_key: {today_key}")
     
-    # Check inventory - count distinct VINs where status = 'active' for the specific date
+    # Check inventory - count distinct VINs where status = 'active' (no date filter)
     inventory_today = db.query(func.count(func.distinct(FactDailyInventory.vin))).filter(
-        FactDailyInventory.date_key == today_key,
         FactDailyInventory.status == 'active'
     ).scalar() or 0
     
-    # If no inventory for today, try the most recent date
-    if not inventory_today:
-        most_recent_date = db.query(func.max(FactDailyInventory.date_key)).scalar()
-        logger.info(f"No inventory for {today_key}, using most recent date: {most_recent_date}")
-        if most_recent_date:
-            inventory_today = db.query(func.count(func.distinct(FactDailyInventory.vin))).filter(
-                FactDailyInventory.date_key == most_recent_date,
-                FactDailyInventory.status == 'active'
-            ).scalar() or 0
-    
-    # Check sales for today with data quality filters
-    sales_today = db.query(func.count(FactSalesEvents.vin)).filter(
-        FactSalesEvents.sale_date_key == today_key,
+    # Check sales for last 30 days with data quality filters
+    sales_last_30_days = db.query(func.count(FactSalesEvents.vin)).filter(
+        FactSalesEvents.sale_date_key >= thirty_days_ago_key,
+        FactSalesEvents.sale_date_key <= today_key,
         FactSalesEvents.vin.isnot(None),  # Ensure VIN is not null
         FactSalesEvents.sale_price.isnot(None)  # Ensure price is not null
     ).scalar() or 0
     
-    # If no sales today, check if we have any sales data at all
-    if not sales_today:
+    # If no sales in last 30 days, check if we have any sales data at all
+    if not sales_last_30_days:
         total_sales_check = db.query(func.count(FactSalesEvents.vin)).filter(
             FactSalesEvents.vin.isnot(None),
             FactSalesEvents.sale_price.isnot(None)
         ).scalar() or 0
-        logger.info(f"No sales today, total sales in database: {total_sales_check}")
+        logger.info(f"No sales in last 30 days, total sales in database: {total_sales_check}")
     
     # Calculate 30 days ago properly (with 2-day lag)
     today = date.today() - timedelta(days=2)  # 2-day lag
@@ -504,11 +494,11 @@ async def get_kpis(db: Session, today_key: int) -> KPIResponse:
         FactSalesEvents.sale_price <= 200000  # Cap at $200k to avoid outliers
     ).scalar() or 0.0
     
-    logger.info(f"KPIs: inventory={inventory_today}, sales={sales_today}, avg_days={avg_days_to_sell}, avg_price={avg_sale_price}")
+    logger.info(f"KPIs: inventory={inventory_today}, sales={sales_last_30_days}, avg_days={avg_days_to_sell}, avg_price={avg_sale_price}")
     
     return KPIResponse(
         total_active_inventory=int(inventory_today),
-        total_sales_today=int(sales_today),
+        total_sales_today=int(sales_last_30_days),
         average_days_to_sell=float(avg_days_to_sell),
         average_sale_price=float(avg_sale_price)
     )
