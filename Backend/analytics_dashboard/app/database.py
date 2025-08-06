@@ -18,7 +18,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     # Fallback configuration if no environment variable is set
     DB_USER = "admin"
-    DB_PASSWORD = quote_plus("raghu@123")  # URL encode the password
+    DB_PASSWORD = quote_plus("raghu@123")  # URL encode the password (becomes raghu%40123)
     DB_NAME = "carvana_db"
     DB_PORT = "5432"
     
