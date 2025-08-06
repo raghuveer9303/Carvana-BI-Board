@@ -121,12 +121,12 @@ const Index = () => {
       color: "primary"
     },
     {
-      title: "Sales Last 30 Days", 
+      title: "Sales Today", 
       value: data.kpis.total_sales_today,
       icon: <TrendingUp className="h-7 w-7" />,
       gradient: "bg-gradient-success",
       trend: { value: 8.1, isPositive: true },
-      description: "Vehicles sold in last 30 days",
+      description: "Vehicles sold today",
       color: "success"
     },
     {
@@ -167,10 +167,7 @@ const Index = () => {
       />
       
       <main className="relative container mx-auto px-6 py-6 space-y-8">
-        {/* Brand Selector Section - Moved to Top */}
-        <section className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-          <BrandSelector onBrandSelect={handleBrandSelect} />
-        </section>
+
 
         {/* Hero Section with KPI Cards */}
         <section className="space-y-6">

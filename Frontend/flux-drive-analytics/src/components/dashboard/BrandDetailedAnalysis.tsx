@@ -203,15 +203,23 @@ const BrandDetailedAnalysis: React.FC<BrandDetailedAnalysisProps> = ({ data, onB
         </Card>
       </div>
 
-      {/* Four Meaningful Charts */}
+      {/* Four Meaningful Charts with Insights */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Chart 1: Sales Trend Over Time */}
+        {/* Chart 1: Sales Trend Over Time with Insights */}
         <Card className="glass backdrop-blur-apple shadow-card">
           <CardHeader>
-                         <CardTitle className="flex items-center space-x-2">
-               <LineChartIcon className="h-5 w-5" />
-               <span>Sales Trend (90 Days)</span>
-             </CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <LineChartIcon className="h-5 w-5" />
+              <span>Sales Trend (90 Days)</span>
+            </CardTitle>
+            <div className="text-sm text-muted-foreground mt-2">
+              📈 <strong>Insight:</strong> {sales_trend.length > 0 ? 
+                `Average ${(sales_trend.reduce((sum, item) => sum + item.sales_count, 0) / sales_trend.length).toFixed(1)} sales per week. ` +
+                (sales_trend[sales_trend.length - 1]?.sales_count > sales_trend[0]?.sales_count ? 
+                  'Trending upward - strong market demand.' : 
+                  'Consider promotional strategies to boost sales.')
+                : 'No trend data available.'}
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -256,13 +264,21 @@ const BrandDetailedAnalysis: React.FC<BrandDetailedAnalysisProps> = ({ data, onB
           </CardContent>
         </Card>
 
-        {/* Chart 2: Price Distribution */}
+        {/* Chart 2: Price Distribution with Market Analysis */}
         <Card className="glass backdrop-blur-apple shadow-card">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <PieChartIcon className="h-5 w-5" />
-              <span>Price Distribution</span>
+              <span>Price Distribution & Market Position</span>
             </CardTitle>
+            <div className="text-sm text-muted-foreground mt-2">
+              💰 <strong>Insight:</strong> {price_distribution.length > 0 ? 
+                `Market positioning shows ${price_distribution.find(p => p.inventory_count === Math.max(...price_distribution.map(p => p.inventory_count)))?.price_range} segment dominates. ` +
+                (price_distribution.find(p => p.price_range.includes('$50k'))?.inventory_count > 0 ? 
+                  'Premium segment strong - consider luxury marketing.' : 
+                  'Focus on mid-range market optimization.')
+                : 'No price data available.'}
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -321,13 +337,20 @@ const BrandDetailedAnalysis: React.FC<BrandDetailedAnalysisProps> = ({ data, onB
           </CardContent>
         </Card>
 
-        {/* Chart 3: Sales by Model */}
+        {/* Chart 3: Sales by Model with Performance Analysis */}
         <Card className="glass backdrop-blur-apple shadow-card">
           <CardHeader>
-                         <CardTitle className="flex items-center space-x-2">
-               <BarChartIcon className="h-5 w-5" />
-               <span>Sales by Model</span>
-             </CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <BarChartIcon className="h-5 w-5" />
+              <span>Model Performance Analysis</span>
+            </CardTitle>
+            <div className="text-sm text-muted-foreground mt-2">
+              🏆 <strong>Insight:</strong> {sales_by_model.length > 0 ? 
+                `Top performer: ${sales_by_model[0]?.model} with ${sales_by_model[0]?.sales_count} sales. ` +
+                `Revenue concentration: ${((sales_by_model[0]?.total_revenue / totalRevenue) * 100).toFixed(1)}% of total revenue. ` +
+                (sales_by_model.length > 3 ? 'Consider expanding top-performing models.' : 'Focus on model diversification.')
+                : 'No model data available.'}
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -384,13 +407,21 @@ const BrandDetailedAnalysis: React.FC<BrandDetailedAnalysisProps> = ({ data, onB
           </CardContent>
         </Card>
 
-        {/* Chart 4: Inventory Age Analysis */}
+        {/* Chart 4: Inventory Age Analysis with Turnover Insights */}
         <Card className="glass backdrop-blur-apple shadow-card">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Activity className="h-5 w-5" />
-              <span>Inventory Age Analysis</span>
+              <span>Inventory Turnover Analysis</span>
             </CardTitle>
+            <div className="text-sm text-muted-foreground mt-2">
+              ⏱️ <strong>Insight:</strong> {inventory_age.length > 0 ? 
+                `Turnover rate: ${inventory_age.find(a => a.age_group.includes('0-30'))?.inventory_count || 0} vehicles (0-30 days). ` +
+                (inventory_age.find(a => a.age_group.includes('90+'))?.inventory_count > 0 ? 
+                  `${inventory_age.find(a => a.age_group.includes('90+'))?.inventory_count} vehicles aging 90+ days - consider pricing strategies.` : 
+                  'Healthy turnover - inventory moving well.')
+                : 'No age data available.'}
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
