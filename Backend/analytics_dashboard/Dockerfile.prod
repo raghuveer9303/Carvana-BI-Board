@@ -27,10 +27,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 
 # Copy installed packages from builder stage
-COPY --from=builder /root/.local /root/.local
-
-# Make sure scripts in .local are usable
-ENV PATH=/root/.local/bin:$PATH
+COPY --from=builder /root/.local /home/app/.local
 
 # Copy application code
 COPY app/ ./app/
@@ -38,10 +35,14 @@ COPY run.py .
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash --uid 1000 app \
-    && chown -R app:app /app
+    && chown -R app:app /app \
+    && chown -R app:app /home/app/.local
 
 # Switch to non-root user
 USER app
+
+# Make sure scripts in .local are usable for app user
+ENV PATH=/home/app/.local/bin:$PATH
 
 # Expose port
 EXPOSE 9515
