@@ -61,15 +61,17 @@ async def debug_data(db: Session = Depends(get_db)):
         vehicle_count = db.query(func.count(DimVehicle.vehicle_key)).scalar()
         price_range_count = db.query(func.count(DimPriceRange.price_range_key)).scalar()
         
-        # Current inventory
+        # Current inventory - count distinct VINs where status = 'active'
         today_key = int(date.today().strftime("%Y%m%d"))
-        current_inventory = db.query(func.sum(FactDailyInventory.active_count)).filter(
-            FactDailyInventory.date_key == today_key
+        current_inventory = db.query(func.count(func.distinct(FactDailyInventory.vin))).filter(
+            FactDailyInventory.date_key == today_key,
+            FactDailyInventory.status == 'active'
         ).scalar() or 0
         
         # Most recent inventory
-        recent_inventory = db.query(func.sum(FactDailyInventory.active_count)).filter(
-            FactDailyInventory.date_key == max_inventory_date
+        recent_inventory = db.query(func.count(func.distinct(FactDailyInventory.vin))).filter(
+            FactDailyInventory.date_key == max_inventory_date,
+            FactDailyInventory.status == 'active'
         ).scalar() or 0 if max_inventory_date else 0
         
         return {
@@ -182,9 +184,10 @@ async def get_kpis(db: Session, today_key: int) -> KPIResponse:
     """Get Key Performance Indicators"""
     logger.info(f"Getting KPIs for date_key: {today_key}")
     
-    # Check if we have inventory data for today
-    inventory_today = db.query(func.sum(FactDailyInventory.active_count)).filter(
-        FactDailyInventory.date_key == today_key
+    # Check if we have inventory data for today - count distinct VINs where status = 'active'
+    inventory_today = db.query(func.count(func.distinct(FactDailyInventory.vin))).filter(
+        FactDailyInventory.date_key == today_key,
+        FactDailyInventory.status == 'active'
     ).scalar() or 0
     
     # If no inventory data for today, use the most recent date
@@ -192,18 +195,24 @@ async def get_kpis(db: Session, today_key: int) -> KPIResponse:
         most_recent_inventory_date = db.query(func.max(FactDailyInventory.date_key)).scalar()
         logger.info(f"No inventory data for {today_key}, using most recent date: {most_recent_inventory_date}")
         if most_recent_inventory_date:
-            inventory_today = db.query(func.sum(FactDailyInventory.active_count)).filter(
-                FactDailyInventory.date_key == most_recent_inventory_date
+            inventory_today = db.query(func.count(func.distinct(FactDailyInventory.vin))).filter(
+                FactDailyInventory.date_key == most_recent_inventory_date,
+                FactDailyInventory.status == 'active'
             ).scalar() or 0
     
-    # Check sales for today
+    # Check sales for today with data quality filters
     sales_today = db.query(func.count(FactSalesEvents.vin)).filter(
-        FactSalesEvents.sale_date_key == today_key
+        FactSalesEvents.sale_date_key == today_key,
+        FactSalesEvents.vin.isnot(None),  # Ensure VIN is not null
+        FactSalesEvents.sale_price.isnot(None)  # Ensure price is not null
     ).scalar() or 0
     
     # If no sales today, check if we have any sales data at all
     if not sales_today:
-        total_sales_check = db.query(func.count(FactSalesEvents.vin)).scalar() or 0
+        total_sales_check = db.query(func.count(FactSalesEvents.vin)).filter(
+            FactSalesEvents.vin.isnot(None),
+            FactSalesEvents.sale_price.isnot(None)
+        ).scalar() or 0
         logger.info(f"No sales today, total sales in database: {total_sales_check}")
     
     # Calculate 30 days ago properly
@@ -211,18 +220,21 @@ async def get_kpis(db: Session, today_key: int) -> KPIResponse:
     thirty_days_ago = today - timedelta(days=30)
     thirty_days_ago_key = int(thirty_days_ago.strftime("%Y%m%d"))
     
-    # Average days to sell (last 30 days)
+    # Average days to sell (last 30 days) - only consider reasonable values
     avg_days_to_sell = db.query(func.avg(FactSalesEvents.days_to_sell)).filter(
         FactSalesEvents.sale_date_key >= thirty_days_ago_key,
         FactSalesEvents.sale_date_key <= today_key,
-        FactSalesEvents.days_to_sell > 0
+        FactSalesEvents.days_to_sell > 0,
+        FactSalesEvents.days_to_sell <= 365  # Cap at 1 year to avoid outliers
     ).scalar() or 0.0
     
-    # Average sale price (last 30 days)
+    # Average sale price (last 30 days) - only consider reasonable values
     avg_sale_price = db.query(func.avg(FactSalesEvents.sale_price)).filter(
         FactSalesEvents.sale_date_key >= thirty_days_ago_key,
         FactSalesEvents.sale_date_key <= today_key,
-        FactSalesEvents.sale_price.isnot(None)
+        FactSalesEvents.sale_price.isnot(None),
+        FactSalesEvents.sale_price > 0,  # Only positive prices
+        FactSalesEvents.sale_price <= 200000  # Cap at $200k to avoid outliers
     ).scalar() or 0.0
     
     logger.info(f"KPIs: inventory={inventory_today}, sales={sales_today}, avg_days={avg_days_to_sell}, avg_price={avg_sale_price}")
@@ -265,7 +277,7 @@ async def get_inventory_by_price_range(db: Session, date_key: int) -> List[Inven
     logger.info(f"Querying inventory for date_key: {date_key}")
     
     # First check if we have any data for this date
-    total_inventory_check = db.query(func.sum(FactDailyInventory.active_count)).filter(
+    total_inventory_check = db.query(func.count(FactDailyInventory.vin)).filter(
         FactDailyInventory.date_key == date_key
     ).scalar()
     logger.info(f"Total inventory for date {date_key}: {total_inventory_check}")
@@ -279,12 +291,11 @@ async def get_inventory_by_price_range(db: Session, date_key: int) -> List[Inven
     
     results = db.query(
         DimPriceRange.range_name,
-        func.sum(FactDailyInventory.active_count).label('inventory_count')
+        func.count(FactDailyInventory.vin).label('inventory_count')
     ).join(
         FactDailyInventory, DimPriceRange.price_range_key == FactDailyInventory.price_range_key
     ).filter(
-        FactDailyInventory.date_key == date_key,
-        FactDailyInventory.active_count > 0
+        FactDailyInventory.date_key == date_key
     ).group_by(
         DimPriceRange.range_name
     ).all()
@@ -357,8 +368,7 @@ async def get_days_on_lot_by_price_range(db: Session, date_key: int) -> List[Day
     
     # If no data for today, try the most recent date
     data_check = db.query(func.count(FactDailyInventory.vin)).filter(
-        FactDailyInventory.date_key == date_key,
-        FactDailyInventory.active_count > 0
+        FactDailyInventory.date_key == date_key
     ).scalar()
     
     if not data_check:
@@ -374,7 +384,6 @@ async def get_days_on_lot_by_price_range(db: Session, date_key: int) -> List[Day
         FactDailyInventory, DimPriceRange.price_range_key == FactDailyInventory.price_range_key
     ).filter(
         FactDailyInventory.date_key == date_key,
-        FactDailyInventory.active_count > 0,
         FactDailyInventory.days_on_lot > 0
     ).group_by(
         DimPriceRange.range_name
@@ -431,7 +440,6 @@ async def get_slow_moving_inventory(db: Session, date_key: int) -> List[SlowMovi
     # If no data for today, try the most recent date
     data_check = db.query(func.count(FactDailyInventory.vin)).filter(
         FactDailyInventory.date_key == date_key,
-        FactDailyInventory.active_count > 0,
         FactDailyInventory.days_on_lot > 30
     ).scalar()
     
@@ -452,8 +460,7 @@ async def get_slow_moving_inventory(db: Session, date_key: int) -> List[SlowMovi
         DimVehicle, FactDailyInventory.vehicle_key == DimVehicle.vehicle_key
     ).filter(
         FactDailyInventory.date_key == date_key,
-        FactDailyInventory.days_on_lot > 30,
-        FactDailyInventory.active_count > 0
+        FactDailyInventory.days_on_lot > 30
     ).distinct().order_by(
         desc(FactDailyInventory.days_on_lot)
     ).limit(20).all()
