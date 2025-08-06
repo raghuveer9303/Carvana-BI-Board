@@ -141,11 +141,11 @@ async def test_sales_by_brand(db: Session = Depends(get_db)):
 async def get_dashboard_data(db: Session = Depends(get_db)):
     """
     Get all dashboard data including KPIs, charts, and tables
-    Data is returned with a 1-day lag (shows data up to yesterday)
+    Data is returned with a 2-day lag (shows data up to 2 days ago)
     """
     try:
-        # Apply 1-day lag to data - show data up to yesterday instead of today
-        today = date.today() - timedelta(days=1)  # 1-day lag
+        # Apply 2-day lag to data - show data up to 2 days ago instead of today
+        today = date.today() - timedelta(days=2)  # 2-day lag
         today_key = int(today.strftime("%Y%m%d"))
         thirty_days_ago = today - timedelta(days=30)
         thirty_days_ago_key = int(thirty_days_ago.strftime("%Y%m%d"))
