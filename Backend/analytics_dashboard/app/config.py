@@ -8,7 +8,7 @@ def _get_database_url() -> str:
     ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
     
     DB_USER = "admin"
-    DB_PASSWORD = quote_plus("raghu@123")  # URL encode the password
+    DB_PASSWORD = "raghu@123"  # Raw password
     DB_NAME = "carvana_db"
     DB_PORT = "5432"
     
@@ -17,7 +17,9 @@ def _get_database_url() -> str:
     else:  # dev environment
         DB_HOST = "brahma"
     
-    return f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    # URL encode the password when building the connection string
+    encoded_password = quote_plus(DB_PASSWORD)
+    return f"postgresql://{DB_USER}:{encoded_password}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 class Settings(BaseSettings):
     # Database - Use environment variable or build from components
