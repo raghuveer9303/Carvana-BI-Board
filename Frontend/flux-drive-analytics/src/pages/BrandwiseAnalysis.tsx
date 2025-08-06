@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Car, TrendingUp, DollarSign, Calendar, BarChart3, PieChart, ChevronDown, ArrowLeft, BarChart3 as BarChart3Icon } from "lucide-react";
@@ -143,10 +142,39 @@ const BrandwiseAnalysis = () => {
       <div className="min-h-screen bg-dashboard-bg font-body">
         <div className="absolute inset-0 gradient-mesh opacity-50"></div>
         
-        <DashboardHeader 
-          isLoading={false}
-          onRefresh={handleRefresh}
-        />
+        {/* Header with Back to Dashboard button */}
+        <header className="sticky top-0 z-50 w-full glass border-b border-border/20 backdrop-blur-apple shadow-sm">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Link to="/">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Dashboard
+                  </Button>
+                </Link>
+                <Separator orientation="vertical" className="h-6" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
+                    <BarChart3Icon className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-display font-bold text-foreground">
+                      Brand Performance Analysis
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                      Select a brand to view detailed metrics and analysis
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <Badge variant="secondary" className="px-3 py-1 rounded-full glass border-0">
+                <BarChart3Icon className="h-3 w-3 mr-1" />
+                Analytics
+              </Badge>
+            </div>
+          </div>
+        </header>
         
         <div className="relative container mx-auto px-6 py-12">
           <div className="max-w-2xl mx-auto">
@@ -181,10 +209,39 @@ const BrandwiseAnalysis = () => {
       <div className="min-h-screen bg-dashboard-bg font-body">
         <div className="absolute inset-0 gradient-mesh opacity-30"></div>
         
-        <DashboardHeader 
-          isLoading={true}
-          onRefresh={handleRefresh}
-        />
+        {/* Header with Back to Dashboard button */}
+        <header className="sticky top-0 z-50 w-full glass border-b border-border/20 backdrop-blur-apple shadow-sm">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Link to="/">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Dashboard
+                  </Button>
+                </Link>
+                <Separator orientation="vertical" className="h-6" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
+                    <BarChart3Icon className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-display font-bold text-foreground">
+                      Brand Performance Analysis
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                      Select a brand to view detailed metrics and analysis
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <Badge variant="secondary" className="px-3 py-1 rounded-full glass border-0">
+                <BarChart3Icon className="h-3 w-3 mr-1" />
+                Analytics
+              </Badge>
+            </div>
+          </div>
+        </header>
         
         <div className="relative container mx-auto px-6 py-6">
           <Skeleton className="h-96 rounded-3xl glass backdrop-blur-apple shadow-card animate-fade-in" />
@@ -197,70 +254,65 @@ const BrandwiseAnalysis = () => {
     <div className="min-h-screen bg-dashboard-bg font-body">
       <div className="absolute inset-0 gradient-mesh opacity-30"></div>
       
-      {selectedBrand ? (
-        // Header for brand detail view
-        <header className="sticky top-0 z-50 w-full glass border-b border-border/20 backdrop-blur-apple shadow-sm">
-          <div className="container mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Button variant="ghost" size="sm" className="gap-2" onClick={handleBackToOverview}>
+      {/* Header with Back to Dashboard button */}
+      <header className="sticky top-0 z-50 w-full glass border-b border-border/20 backdrop-blur-apple shadow-sm">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link to="/">
+                <Button variant="ghost" size="sm" className="gap-2">
                   <ArrowLeft className="h-4 w-4" />
-                  Back to Overview
+                  Back to Dashboard
                 </Button>
-                <Separator orientation="vertical" className="h-6" />
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
-                    <BarChart3Icon className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-display font-bold text-foreground">
-                      {selectedBrand} Analysis
-                    </h1>
-                    <p className="text-sm text-muted-foreground">
-                      Detailed brand performance metrics and insights
-                    </p>
-                  </div>
+              </Link>
+              <Separator orientation="vertical" className="h-6" />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
+                  <BarChart3Icon className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-display font-bold text-foreground">
+                    {selectedBrand ? `${selectedBrand} Analysis` : 'Brand Performance Analysis'}
+                  </h1>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedBrand ? 'Detailed brand performance metrics and insights' : 'Select a brand to view detailed metrics and analysis'}
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                {brandMetrics && (
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={handleBasicView}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        viewMode === 'basic' 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-white/10 text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      Basic View
-                    </button>
-                    <button
-                      onClick={handleDetailedView}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        viewMode === 'detailed' 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-white/10 text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      Detailed Analysis
-                    </button>
-                  </div>
-                )}
-                <Badge variant="secondary" className="px-3 py-1 rounded-full glass border-0">
-                  <BarChart3Icon className="h-3 w-3 mr-1" />
-                  Analytics
-                </Badge>
-              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              {selectedBrand && brandMetrics && (
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={handleBasicView}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      viewMode === 'basic' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-white/10 text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Basic View
+                  </button>
+                  <button
+                    onClick={handleDetailedView}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      viewMode === 'detailed' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-white/10 text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Detailed Analysis
+                  </button>
+                </div>
+              )}
+              <Badge variant="secondary" className="px-3 py-1 rounded-full glass border-0">
+                <BarChart3Icon className="h-3 w-3 mr-1" />
+                Analytics
+              </Badge>
             </div>
           </div>
-        </header>
-      ) : (
-        <DashboardHeader 
-          isLoading={isLoading}
-          onRefresh={handleRefresh}
-        />
-      )}
+        </div>
+      </header>
       
       <div className="relative container mx-auto px-6 py-6">
                 {selectedBrand ? (
@@ -398,18 +450,10 @@ const BrandwiseAnalysis = () => {
         ) : (
           // Brand Overview with Top 10 and Dropdown Selection
           <div className="space-y-8">
-            {/* Back to Dashboard Button */}
-            <div className="flex justify-start">
-              <Link to="/" className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back to Dashboard</span>
-              </Link>
-            </div>
-
-            {/* Brand Selection Dropdown - Moved to Top */}
+            {/* Brand Selection Dropdown */}
             <div className="glass rounded-3xl backdrop-blur-apple shadow-card p-8">
               <h2 className="text-2xl font-display font-semibold text-foreground mb-6">
-                Select Any Brand
+                Select a brand to view detailed metrics and analysis
               </h2>
               <div className="relative">
                 <Select onValueChange={handleBrandClick}>
@@ -446,14 +490,7 @@ const BrandwiseAnalysis = () => {
               </div>
             </div>
 
-            <div className="text-center space-y-4">
-              <h1 className="text-4xl font-display font-bold text-foreground">
-                Brand Performance Analysis
-              </h1>
-              <p className="text-xl text-muted-foreground">
-                Select a brand to view detailed metrics and analysis
-              </p>
-            </div>
+            
 
             {/* Top 10 Brands Performance Chart */}
             {data && (

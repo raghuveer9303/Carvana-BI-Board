@@ -193,125 +193,105 @@ export function DashboardHeader({
               </span>
             </div>
             
-            {/* Performance Badge */}
-            <Badge 
-              variant="secondary" 
-              className="px-3 py-1 rounded-full bg-indigo-50/70 border border-indigo-100 text-xs font-medium text-indigo-600"
-            >
-              <Zap className="h-3 w-3 mr-1 text-indigo-500" />
-              Real-time
-            </Badge>
+
           </div>
 
           {/* Right Section - Action Buttons */}
           <div className="flex items-center gap-3">
-            {/* Last Updated Badge */}
-            <Badge 
-              variant="outline" 
-              className={cn(
-                "hidden sm:flex px-3 py-1 rounded-full border border-slate-200/50 text-xs text-slate-600 transition-all duration-500",
-                justUpdated ? [
-                  // Glowing state after refresh
-                  "bg-emerald-50 border-emerald-200 text-emerald-700",
-                  "shadow-md shadow-emerald-200/50 animate-glow",
-                  "ring-2 ring-emerald-200/30"
-                ] : [
-                  // Default state
-                  "bg-slate-50/50"
-                ]
-              )}
-            >
-              {justUpdated && (
-                <div className="absolute inset-0 rounded-full bg-emerald-100/50 animate-pulse" />
-              )}
-              <span className="relative z-10">
-                Updated {formatLastUpdated()}
-              </span>
-            </Badge>
+            {/* Combined Refresh and Updated Badge */}
+            <div className="flex items-center gap-2">
+              <Badge 
+                variant="outline" 
+                className={cn(
+                  "px-3 py-1 rounded-full border border-slate-200/50 text-xs text-slate-600 transition-all duration-500",
+                  justUpdated ? [
+                    // Glowing state after refresh
+                    "bg-emerald-50 border-emerald-200 text-emerald-700",
+                    "shadow-md shadow-emerald-200/50 animate-glow",
+                    "ring-2 ring-emerald-200/30"
+                  ] : [
+                    // Default state
+                    "bg-slate-50/50"
+                  ]
+                )}
+              >
+                {justUpdated && (
+                  <div className="absolute inset-0 rounded-full bg-emerald-100/50 animate-pulse" />
+                )}
+                <span className="relative z-10">
+                  Updated {formatLastUpdated()}
+                </span>
+              </Badge>
 
-            {/* Brandwise Analysis Link */}
+              {/* Apple-style refresh button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={currentlyLoading}
+                className={cn(
+                  "btn-apple px-3 py-1 h-8 rounded-full border-2 transition-all duration-300",
+                  "focus:ring-2 focus:ring-emerald-200 shadow-sm relative overflow-hidden",
+                  currentlyLoading ? [
+                    // Loading state styling
+                    "border-emerald-300 bg-emerald-100 text-emerald-800",
+                    "shadow-md animate-pulse cursor-not-allowed"
+                  ] : [
+                    // Default state styling
+                    "border-emerald-200 bg-emerald-50 text-emerald-700",
+                    "hover:bg-emerald-100 hover:text-emerald-800 hover:border-emerald-300",
+                    "hover:shadow-md active:scale-95 active:shadow-lg",
+                    "hover:animate-none active:animate-pulse"
+                  ]
+                )}
+              >
+                <RefreshCw className={cn(
+                  "h-3 w-3 transition-all duration-300",
+                  currentlyLoading ? [
+                    "text-emerald-700 animate-spin"
+                  ] : [
+                    "text-emerald-600 group-hover:text-emerald-700",
+                    "hover:rotate-180 active:rotate-360"
+                  ]
+                )} />
+              </Button>
+            </div>
+
+            {/* Brandwise Analysis Link - Bigger with square border */}
             <Link to="/brandwise-analysis">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 className={cn(
-                  "px-3 py-2 h-10 rounded-xl text-slate-600",
-                  "hover:bg-slate-100/50 hover:text-slate-700 transition-all duration-300",
-                  "active:scale-95"
+                  "px-4 py-3 h-12 rounded-lg border-2 text-slate-700 font-semibold",
+                  "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200",
+                  "hover:from-blue-100 hover:to-indigo-100 hover:border-blue-300",
+                  "hover:text-blue-800 transition-all duration-300",
+                  "active:scale-95 shadow-md"
                 )}
               >
-                <BarChart3 className="h-4 w-4 mr-2 text-slate-500" />
-                <span className="font-medium hidden md:inline">Brand Analysis</span>
+                <BarChart3 className="h-5 w-5 mr-2 text-blue-600" />
+                <span className="font-semibold">Brand Analysis</span>
               </Button>
             </Link>
 
-            {/* Project Docs Link */}
+            {/* Project Docs Link - Bigger with square border */}
             <Link to="/docs">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 className={cn(
-                  "px-3 py-2 h-10 rounded-xl text-slate-600",
-                  "hover:bg-slate-100/50 hover:text-slate-700 transition-all duration-300",
-                  "active:scale-95"
+                  "px-4 py-3 h-12 rounded-lg border-2 text-slate-700 font-semibold",
+                  "bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200",
+                  "hover:from-purple-100 hover:to-pink-100 hover:border-purple-300",
+                  "hover:text-purple-800 transition-all duration-300",
+                  "active:scale-95 shadow-md"
                 )}
               >
-                <FileText className="h-4 w-4 mr-2 text-slate-500" />
-                <span className="font-medium hidden md:inline">Docs</span>
+                <FileText className="h-5 w-5 mr-2 text-purple-600" />
+                <span className="font-semibold">Docs</span>
               </Button>
             </Link>
-
-            {/* Apple-style refresh button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRefresh}
-              disabled={currentlyLoading}
-              className={cn(
-                "btn-apple px-4 py-2 h-10 rounded-xl border-2 transition-all duration-300",
-                "focus:ring-2 focus:ring-emerald-200 shadow-sm relative overflow-hidden",
-                currentlyLoading ? [
-                  // Loading state styling
-                  "border-emerald-300 bg-emerald-100 text-emerald-800",
-                  "shadow-md animate-pulse cursor-not-allowed"
-                ] : [
-                  // Default state styling
-                  "border-emerald-200 bg-emerald-50 text-emerald-700",
-                  "hover:bg-emerald-100 hover:text-emerald-800 hover:border-emerald-300",
-                  "hover:shadow-md active:scale-95 active:shadow-lg",
-                  "hover:animate-none active:animate-pulse"
-                ]
-              )}
-            >
-              <RefreshCw className={cn(
-                "h-4 w-4 mr-2 transition-all duration-300",
-                currentlyLoading ? [
-                  "text-emerald-700 animate-spin"
-                ] : [
-                  "text-emerald-600 group-hover:text-emerald-700",
-                  "hover:rotate-180 active:rotate-360"
-                ]
-              )} />
-              <span className={cn(
-                "font-medium transition-all duration-200 relative z-10",
-                currentlyLoading && "animate-pulse"
-              )}>
-                {currentlyLoading ? 'Syncing...' : 'Refresh'}
-              </span>
-              
-              {/* Visual feedback ripple effect */}
-              {currentlyLoading && (
-                <div className="absolute inset-0 rounded-xl bg-emerald-200/30 animate-ping opacity-75" />
-              )}
-              
-              {/* Loading progress bar */}
-              {isRefreshing && (
-                <div className="absolute bottom-0 left-0 h-0.5 bg-emerald-300/50 w-full">
-                  <div className="h-full bg-emerald-400 animate-pulse rounded-full transition-all duration-1000 ease-out"
-                       style={{ width: '100%' }} />
-                </div>
-              )}
-            </Button>
           </div>
         </div>
 
@@ -331,33 +311,64 @@ export function DashboardHeader({
             {/* Mobile Sales Period Indicator */}
             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-slate-50/70 border border-slate-200/50">
               <Calendar className="h-3 w-3 text-slate-500" />
-              <span className="text-xs text-slate-600">{getPeriodLabel(selectedPeriod)}</span>
+              <span className="text-xs text-slate-600">Sales: {getPeriodLabel(selectedPeriod)}</span>
               <Badge variant="secondary" className="ml-1 px-1 py-0 text-xs bg-amber-50 border-amber-200 text-amber-600">
                 Soon
               </Badge>
             </div>
             
-            <Badge 
-              variant="secondary" 
-              className={cn(
-                "px-3 py-1 rounded-full border border-slate-200/50 text-xs text-slate-600 transition-all duration-500",
-                justUpdated ? [
-                  // Mobile glowing state after refresh
-                  "bg-emerald-50/70 border-emerald-200 text-emerald-700",
-                  "shadow-sm shadow-emerald-200/30 animate-glow"
-                ] : [
-                  // Default mobile state
-                  "bg-slate-50/70"
-                ]
-              )}
-            >
-              {justUpdated && (
-                <div className="absolute inset-0 rounded-full bg-emerald-100/30 animate-pulse" />
-              )}
-              <span className="relative z-10">
-                {formatLastUpdated()}
-              </span>
-            </Badge>
+            {/* Mobile Combined Refresh and Updated */}
+            <div className="flex items-center gap-1">
+              <Badge 
+                variant="secondary" 
+                className={cn(
+                  "px-2 py-1 rounded-full border border-slate-200/50 text-xs text-slate-600 transition-all duration-500",
+                  justUpdated ? [
+                    // Mobile glowing state after refresh
+                    "bg-emerald-50/70 border-emerald-200 text-emerald-700",
+                    "shadow-sm shadow-emerald-200/30 animate-glow"
+                  ] : [
+                    // Default mobile state
+                    "bg-slate-50/70"
+                  ]
+                )}
+              >
+                {justUpdated && (
+                  <div className="absolute inset-0 rounded-full bg-emerald-100/30 animate-pulse" />
+                )}
+                <span className="relative z-10">
+                  {formatLastUpdated()}
+                </span>
+              </Badge>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={currentlyLoading}
+                className={cn(
+                  "px-2 py-1 h-6 rounded-full border-2 transition-all duration-300",
+                  "focus:ring-2 focus:ring-emerald-200 shadow-sm relative overflow-hidden",
+                  currentlyLoading ? [
+                    "border-emerald-300 bg-emerald-100 text-emerald-800",
+                    "shadow-md animate-pulse cursor-not-allowed"
+                  ] : [
+                    "border-emerald-200 bg-emerald-50 text-emerald-700",
+                    "hover:bg-emerald-100 hover:text-emerald-800 hover:border-emerald-300",
+                    "hover:shadow-md active:scale-95 active:shadow-lg"
+                  ]
+                )}
+              >
+                <RefreshCw className={cn(
+                  "h-3 w-3 transition-all duration-300",
+                  currentlyLoading ? [
+                    "text-emerald-700 animate-spin"
+                  ] : [
+                    "text-emerald-600"
+                  ]
+                )} />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
