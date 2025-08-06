@@ -8,7 +8,7 @@ def _get_database_url() -> str:
     ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
     
     DB_USER = "admin"
-    DB_PASSWORD = "raghu%40123"  # Raw password
+    DB_PASSWORD = "raghu@123"  # Raw password
     DB_NAME = "carvana_db"
     DB_PORT = "5432"
     
