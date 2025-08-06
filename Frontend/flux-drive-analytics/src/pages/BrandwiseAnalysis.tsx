@@ -271,9 +271,9 @@ const BrandwiseAnalysis = () => {
                   <BarChart3Icon className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-display font-bold text-foreground">
-                    {selectedBrand ? `${selectedBrand}1 Analysis` : 'Brand Performance Analysis'}
-                  </h1>
+                                       <h1 className="text-xl font-display font-bold text-foreground">
+                       {selectedBrand ? `${selectedBrand} Analysis` : 'Brand Performance Analysis'}
+                     </h1>
                   <p className="text-sm text-muted-foreground">
                     {selectedBrand ? 'Detailed brand performance metrics and insights' : 'Select a brand to view detailed metrics and analysis'}
                   </p>
@@ -481,7 +481,7 @@ const BrandwiseAnalysis = () => {
                               }}
                             />
                           </div>
-                          <span className="font-medium text-foreground">{brand}1</span>
+                                                     <span className="font-medium text-foreground">{brand}</span>
                         </div>
                       </SelectItem>
                     ))}
@@ -524,7 +524,7 @@ const BrandwiseAnalysis = () => {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
-                                                         <span className="font-medium text-foreground">{brand.brand}1</span>
+                                                         <span className="font-medium text-foreground">{brand.brand}</span>
                             <span className="text-sm text-muted-foreground">
                               {brand.sales_count} sales
                             </span>
